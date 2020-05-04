@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { RefreshControl } from 'react-native-web-refresh-control'
 import {
   FlatList,
   StyleSheet,
@@ -10,6 +9,7 @@ import {
 import { db } from '../firebase'
 import { COLLECTIONS } from '../constants/Api'
 import { printDate, colorHash } from '../utils'
+import { RefreshControl } from 'react-native-web-refresh-control'
 
 const styles = StyleSheet.create({
   container: {
@@ -122,12 +122,13 @@ export default function MessageList({ threadRef, onPress }) {
           id: doc.id,
           ...doc.data()
         }))
-        console.log(prevMessages)
         setMessages([...prevMessages.reverse(), ...messages])
       })
       .then(() => setRefreshing(false))
       .catch(() => setRefreshing(false))
   }
+
+  console.log(refreshing)
 
   return (
     <View style={styles.container}>
@@ -135,7 +136,7 @@ export default function MessageList({ threadRef, onPress }) {
         ref={listRef}
         style={styles.list}
         data={messages}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+        refreshControl={<RefreshControl refresh={refreshing} onRefresh={refresh} />}
         keyExtractor={({ id }) => id}
         renderItem={({ item }) => <Message item={item} onPress={onPress} />}
         ListFooterComponent={() => (
