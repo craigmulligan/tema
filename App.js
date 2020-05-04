@@ -5,11 +5,13 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { patchFlatListProps } from 'react-native-web-refresh-control'
 
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import useLinking from './navigation/useLinking';
 
 const Stack = createStackNavigator();
+patchFlatListProps()
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
