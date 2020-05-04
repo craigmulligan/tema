@@ -79,32 +79,16 @@ function useMessages() {
 
     query
       .limit(6)
-      .get()
-      .then(snapshot => {
-        const messages = snapshot.docs
-          .map(doc => ({
+      .onSnapshot(snapshot => {
+        const newMessages = []
+        snapshot.forEach(doc => {
+          newMessages.unshift({
             id: doc.id,
             ...doc.data()
-          }))
-          .reverse()
-
-        console.log(messages.length)
-        setLists(messages)
-      })
-      .then(() => {
-        // register listener
-        return query.onSnapshot(doc => {
-          // setLists([
-          // ...lists,
-          // {
-          // id: doc.id,
-          // ...doc.data()
-          // }
-          // ])
+          })
         })
-      })
-      .catch(err => {
-        console.log('Failed to attach listener!', err)
+
+        setLists(newMessages)
       })
   }, [])
 
