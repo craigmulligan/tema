@@ -12,11 +12,11 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 9,
-    padding: 50
+    padding: 25,
   },
   button: {
+    padding: 25,
     flex: 1,
-    padding: 50,
     alignContent: 'center',
     alignSelf: 'center'
   },

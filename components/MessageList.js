@@ -1,5 +1,5 @@
 import * as React from 'react'
-import RefreshControl from './RefreshControl'
+import { RefreshControl } from 'react-native-web-refresh-control'
 import {
   FlatList,
   StyleSheet,
@@ -37,8 +37,7 @@ const styles = StyleSheet.create({
 function Message({ item, onPress }) {
   return (
     <TouchableOpacity
-      styles={styles.message}
-      onPress={() => onPress(item)}
+    onPress={onPress}
       style={[
         styles.message,
         { backgroundColor: colorHash.hex(item.threadRef.id) }
@@ -46,7 +45,7 @@ function Message({ item, onPress }) {
     >
       <Text style={styles.messageText}>{item.text}</Text>
       <Text style={styles.messageMeta}>
-        {new Date(item.createdAt).toString()}
+        {printDate(new Date(item.createdAt))}
       </Text>
     </TouchableOpacity>
   )
@@ -68,7 +67,7 @@ function Callout({ onPress, threadRef }) {
   )
 }
 
-function useMessages() {
+function useMessages(listRef) {
   const [lists, setLists] = React.useState([])
   React.useEffect(() => {
     // returning the onSnapshot result will result in
@@ -88,7 +87,16 @@ function useMessages() {
           })
         })
 
-        setLists(newMessages)
+
+        setLists([...lists, ...newMessages])
+        if (lists.length === 0) {
+          // first time we have messages
+          // lets scroll to bottom
+          // TODO fix this is a little hacky 
+          setTimeout(() => {
+            listRef.current.scrollToEnd()
+          }, 250)
+        }
       })
   }, [])
 
@@ -96,8 +104,9 @@ function useMessages() {
 }
 
 export default function MessageList({ threadRef, onPress }) {
+  const listRef = React.useRef();
   const [refreshing, setRefreshing] = React.useState(false)
-  const [messages, setMessages] = useMessages()
+  const [messages, setMessages] = useMessages(listRef)
 
   function refresh() {
     setRefreshing(true)
@@ -123,18 +132,14 @@ export default function MessageList({ threadRef, onPress }) {
   return (
     <View style={styles.container}>
       <FlatList
-        refreshing={refreshing}
+        ref={listRef}
         style={styles.list}
         data={messages}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
         keyExtractor={({ id }) => id}
         renderItem={({ item }) => <Message item={item} onPress={onPress} />}
         ListFooterComponent={() => (
           <Callout threadRef={threadRef} onPress={onPress} />
-        )}
-        ListHeaderComponent={() => (
-          <TouchableOpacity onPress={refresh}>
-            <Text>Refresh</Text>
-          </TouchableOpacity>
         )}
       />
     </View>
