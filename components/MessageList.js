@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   message: {
     padding: 50,
     flex: 1,
+    borderLeftWidth: 10,
     flexDirection: 'row'
   },
   messageText: {
@@ -39,7 +40,10 @@ function Message({ item, onPress }) {
       onPress={() => onPress(item)}
       style={[
         styles.message,
-        { backgroundColor: colorHash.hex(item.threadRef.id) }
+        {
+          backgroundColor: colorHash.light.hex(item.threadRef.id),
+          borderLeftColor: colorHash.dark.hex(item.threadRef.id)
+        }
       ]}
     >
       <Text style={styles.messageText}>{item.text}</Text>
@@ -86,9 +90,7 @@ function useMessages(listRef) {
         })
       })
 
-      console.log('New Snaps!', newMessages.length)
       const msgs = removeDuplicates([...lists, ...newMessages], 'id')
-      console.log(msgs.length)
 
       setLists(msgs)
       if (lists.length === 0) {

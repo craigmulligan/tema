@@ -8,21 +8,23 @@ import { COLLECTIONS } from '../constants/Api'
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    minHeight: 80,
+    alignItems: 'stretch'
   },
   input: {
-    flex: 9,
-    padding: 25
+    flex: 7,
+    paddingLeft: 10,
+    paddingRight: 10
   },
   button: {
-    padding: 25,
-    flex: 1,
-    alignContent: 'center',
-    alignSelf: 'center'
+    flex: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   buttonText: {
     textAlign: 'center',
-    fontSize: 16,
     color: '#fff'
   }
 })
@@ -48,6 +50,7 @@ export default function MessageInput({ threadRef }) {
   return (
     <View style={styles.container}>
       <TextInput
+        multiline={true}
         style={styles.input}
         placeholder={threadRef ? 'Reply to thread.' : 'Start a new thread.'}
         onChangeText={setText}
@@ -56,21 +59,23 @@ export default function MessageInput({ threadRef }) {
       <TouchableOpacity
         style={[
           {
-            backgroundColor: threadRef ? colorHash.hex(threadRef.id) : null
+            backgroundColor: threadRef ? colorHash.dark.hex(threadRef.id) : null
           },
           styles.button
         ]}
         onPress={addMessage}
       >
-        <Ionicons
-          style={[
-            styles.buttonText,
-            {
-              color: !threadRef ? 'black' : 'white'
-            }
-          ]}
-          name="md-send"
-        />
+        <View>
+          <Ionicons
+            style={[
+              styles.buttonText,
+              {
+                color: !threadRef ? 'black' : 'white'
+              }
+            ]}
+            name="md-send"
+          />
+        </View>
       </TouchableOpacity>
     </View>
   )

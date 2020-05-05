@@ -1,8 +1,11 @@
 import ColorHash from 'color-hash'
 
-export const colorHash = new ColorHash({
-  lightness: 0.8
-})
+export const colorHash = {
+  dark: new ColorHash(),
+  light: new ColorHash({
+    lightness: 0.8
+  })
+}
 
 export function printDate(d) {
   return (
