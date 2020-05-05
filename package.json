@@ -5,6 +5,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "build:web": "expo build:web",
+    "build": "expo build",
     "eject": "expo eject",
     "test": "jest --watchAll"
   },
@@ -38,6 +40,7 @@
   "devDependencies": {
     "@babel/core": "^7.8.6",
     "babel-preset-expo": "~8.1.0",
+    "gh-pages": "^2.2.0",
     "jest-expo": "~37.0.0"
   },
   "private": true

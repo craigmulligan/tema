@@ -93,13 +93,13 @@ function useMessages(listRef) {
       const msgs = removeDuplicates([...lists, ...newMessages], 'id')
 
       setLists(msgs)
-      if (lists.length === 0) {
-        // first time we have messages
-        // lets scroll to bottom
-        // TODO fix this is a little hacky
+      if (listRef.current) {
+        // TODO only scroll to bottom if the user
+        // sent the message themselves.
+        // Or if they are currently scrolled to bottom.
         setTimeout(() => {
           listRef.current.scrollToEnd()
-        }, 250)
+        }, 200)
       }
     })
   }, [])
