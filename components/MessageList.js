@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { db } from '../firebase'
 import { COLLECTIONS } from '../constants/Api'
-import { printDate, colorHash } from '../utils'
+import { printDate, colorHash, removeDuplicates } from '../utils'
 import { RefreshControl } from 'react-native-web-refresh-control'
 
 const styles = StyleSheet.create({
@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F0f0f0f0'
   },
-  callout: {},
   calloutText: {
     textAlign: 'center',
     padding: 10
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
 function Message({ item, onPress }) {
   return (
     <TouchableOpacity
-    onPress={onPress}
+      onPress={() => onPress(item)}
       style={[
         styles.message,
         { backgroundColor: colorHash.hex(item.threadRef.id) }
@@ -54,15 +53,17 @@ function Message({ item, onPress }) {
 function Callout({ onPress, threadRef }) {
   if (threadRef) {
     return (
-      <TouchableOpacity style={styles.callout} onPress={() => onPress({})}>
-        <Text style={styles.callout}>Or create a new thread</Text>
+      <TouchableOpacity onPress={() => onPress({})}>
+        <Text style={styles.calloutText}>
+          Click here to create a new thread
+        </Text>
       </TouchableOpacity>
     )
   }
 
   return (
-    <View style={styles.callout}>
-      <Text style={styles.calloutText}>Or click on a message to reply</Text>
+    <View>
+      <Text style={styles.calloutText}>Click on a message to reply</Text>
     </View>
   )
 }
@@ -76,39 +77,43 @@ function useMessages(listRef) {
       .collection(COLLECTIONS.messages)
       .orderBy('createdAt', 'desc')
 
-    query
-      .limit(6)
-      .onSnapshot(snapshot => {
-        const newMessages = []
-        snapshot.forEach(doc => {
-          newMessages.unshift({
-            id: doc.id,
-            ...doc.data()
-          })
+    query.limit(6).onSnapshot(snapshot => {
+      const newMessages = []
+      snapshot.forEach(doc => {
+        newMessages.unshift({
+          id: doc.id,
+          ...doc.data()
         })
-
-
-        setLists([...lists, ...newMessages])
-        if (lists.length === 0) {
-          // first time we have messages
-          // lets scroll to bottom
-          // TODO fix this is a little hacky 
-          setTimeout(() => {
-            listRef.current.scrollToEnd()
-          }, 250)
-        }
       })
+
+      console.log('New Snaps!', newMessages.length)
+      const msgs = removeDuplicates([...lists, ...newMessages], 'id')
+      console.log(msgs.length)
+
+      setLists(msgs)
+      if (lists.length === 0) {
+        // first time we have messages
+        // lets scroll to bottom
+        // TODO fix this is a little hacky
+        setTimeout(() => {
+          listRef.current.scrollToEnd()
+        }, 250)
+      }
+    })
   }, [])
 
   return [lists, setLists]
 }
 
 export default function MessageList({ threadRef, onPress }) {
-  const listRef = React.useRef();
+  const listRef = React.useRef()
   const [refreshing, setRefreshing] = React.useState(false)
   const [messages, setMessages] = useMessages(listRef)
 
   function refresh() {
+    if (refreshing) {
+      return
+    }
     setRefreshing(true)
     const first = messages[0]
     return db
@@ -128,15 +133,15 @@ export default function MessageList({ threadRef, onPress }) {
       .catch(() => setRefreshing(false))
   }
 
-  console.log(refreshing)
-
   return (
     <View style={styles.container}>
       <FlatList
         ref={listRef}
         style={styles.list}
         data={messages}
-        refreshControl={<RefreshControl refresh={refreshing} onRefresh={refresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+        }
         keyExtractor={({ id }) => id}
         renderItem={({ item }) => <Message item={item} onPress={onPress} />}
         ListFooterComponent={() => (

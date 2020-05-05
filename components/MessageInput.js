@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 9,
-    padding: 25,
+    padding: 25
   },
   button: {
     padding: 25,
@@ -31,6 +31,9 @@ export default function MessageInput({ threadRef }) {
   const [text, setText] = React.useState('')
 
   const addMessage = () => {
+    if (text === '') {
+      throw new Error('Invalid Message')
+    }
     db.collection(COLLECTIONS.messages).add({
       text,
       createdAt: Date.now(),
@@ -46,18 +49,14 @@ export default function MessageInput({ threadRef }) {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder={
-          threadRef
-            ? 'Replying to thread..' + threadRef.id
-            : 'Starting a new thread.'
-        }
+        placeholder={threadRef ? 'Reply to thread.' : 'Start a new thread.'}
         onChangeText={setText}
         value={text}
       />
       <TouchableOpacity
         style={[
           {
-            backgroundColor: threadRef && colorHash.hex(threadRef.id)
+            backgroundColor: threadRef ? colorHash.hex(threadRef.id) : null
           },
           styles.button
         ]}
@@ -67,7 +66,7 @@ export default function MessageInput({ threadRef }) {
           style={[
             styles.buttonText,
             {
-              color: !threadRef && 'black'
+              color: !threadRef ? 'black' : 'white'
             }
           ]}
           name="md-send"
