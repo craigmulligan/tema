@@ -14,10 +14,15 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 7,
-    paddingLeft: 10,
-    paddingRight: 10
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  inputText: {
+    width: '100%',
+    paddingLeft: 25
   },
   button: {
+    maxWidth: 200,
     flex: 3,
     flexDirection: 'row',
     alignItems: 'center',
@@ -49,13 +54,15 @@ export default function MessageInput({ threadRef }) {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        multiline={true}
-        style={styles.input}
-        placeholder={threadRef ? 'Reply to thread.' : 'Start a new thread.'}
-        onChangeText={setText}
-        value={text}
-      />
+      <View style={styles.input}>
+        <TextInput
+          style={styles.inputText}
+          multiline={true}
+          placeholder={threadRef ? 'Reply to thread.' : 'Start a new thread.'}
+          onChangeText={setText}
+          value={text}
+        />
+      </View>
       <TouchableOpacity
         style={[
           {
