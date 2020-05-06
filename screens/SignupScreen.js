@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons'
 import * as React from 'react'
+import Button from '../primitives/Button'
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  TextInput,
-  Button
 } from 'react-native'
+import TextInput from '../primitives/TextInput'
 import { auth } from '../firebase'
 
 export default function SignUpScreen({ navigation }) {
@@ -24,18 +24,15 @@ export default function SignUpScreen({ navigation }) {
         value={email}
         onChangeText={setEmail}
         placeholder={'Email'}
-        style={styles.input}
       />
       <TextInput
         value={password}
         onChangeText={setPassword}
         placeholder={'Password'}
         secureTextEntry={true}
-        style={styles.input}
       />
       <Button
-        title={'Signup'}
-        style={styles.button}
+        style={{ marginBottom: 20 }}
         onPress={() => {
           setLoading(true)
           auth
@@ -56,7 +53,7 @@ export default function SignUpScreen({ navigation }) {
               }
             })
         }}
-      />
+      >Sign up</Button>
       <Text onPress={() => navigation.navigate('login')}>Or login</Text>
     </View>
   )
@@ -68,10 +65,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  input: {
-    padding: 25
-  },
-  button: {
-    marginBotton: 25
-  }
 })
