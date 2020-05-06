@@ -5,7 +5,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  Button
 } from 'react-native'
 import { auth } from '../firebase'
 
@@ -32,7 +33,8 @@ export default function SignUpScreen({ navigation }) {
         secureTextEntry={true}
         style={styles.input}
       />
-      <TouchableOpacity
+      <Button
+        title={'Signup'}
         style={styles.button}
         onPress={() => {
           setLoading(true)
@@ -54,9 +56,7 @@ export default function SignUpScreen({ navigation }) {
               }
             })
         }}
-      >
-        <Text style={styles.buttonText}>Signup</Text>
-      </TouchableOpacity>
+      />
       <Text onPress={() => navigation.navigate('login')}>Or login</Text>
     </View>
   )
@@ -72,10 +72,6 @@ const styles = StyleSheet.create({
     padding: 25
   },
   button: {
-    backgroundColor: 'black',
-    padding: 25
-  },
-  buttonText: {
-    color: 'white'
+    marginBotton: 25
   }
 })

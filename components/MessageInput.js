@@ -42,16 +42,16 @@ export default function MessageInput({ threadRef }) {
     if (text === '') {
       throw new Error('Invalid Message')
     }
-    const currentUserId = auth.currentUser.uid
+    const currentUser = auth.currentUser
 
-    if (!currentUserId) {
+    if (!currentUser) {
       throw new Error('You need to be logged in to send a message')
     }
     db.collection(COLLECTIONS.messages).add({
-      userDisplayName: auth.currentUser.email,
+      userDisplayName: currentUser.displayName || currentUser.email,
       text,
       createdAt: Date.now(),
-      userRef: db.collection(COLLECTIONS.users).doc(auth.currentUser.uid),
+      userRef: db.collection(COLLECTIONS.users).doc(currentUser.uid),
       threadRef: threadRef
         ? threadRef
         : db.collection(COLLECTIONS.threads).doc()
