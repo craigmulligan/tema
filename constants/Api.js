@@ -1,4 +1,5 @@
 export const COLLECTIONS = {
   messages: 'messages',
-  threads: 'threads'
+  threads: 'threads',
+  users: 'users'
 }

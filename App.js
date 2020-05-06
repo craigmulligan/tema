@@ -39,7 +39,7 @@ export default function App(props) {
         console.warn(e)
       } finally {
         SplashScreen.hide()
-        setLoadingComplete(true) 
+        setLoadingComplete(true)
       }
     }
 
@@ -47,12 +47,11 @@ export default function App(props) {
   }, [])
 
   React.useEffect(() => {
-    return auth.onAuthStateChanged((user) => {
-      setUser(user);
+    return auth.onAuthStateChanged(user => {
+      setUser(user)
     })
   })
 
-  console.log(isLoadingComplete)
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return null
   } else {
@@ -65,9 +64,10 @@ export default function App(props) {
         >
           <Stack.Navigator>
             {user == null ? (
-             <Stack.Screen name="auth" component={AuthNavigator} />
-             ) :
-              (<Stack.Screen name="app" component={BottomTabNavigator} />)}
+              <Stack.Screen name="auth" component={AuthNavigator} />
+            ) : (
+              <Stack.Screen name="app" component={BottomTabNavigator} />
+            )}
           </Stack.Navigator>
         </NavigationContainer>
       </View>

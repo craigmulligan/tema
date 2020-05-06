@@ -3,32 +3,26 @@ import * as React from 'react'
 
 import TabBarIcon from '../components/TabBarIcon'
 import SignupScreen from '../screens/SignupScreen'
-import LinksScreen from '../screens/LinksScreen'
+import LoginScreen from '../screens/LoginScreen'
 
 const AuthNavigator = createStackNavigator()
-const INITIAL_ROUTE_NAME = 'Signup'
+const INITIAL_ROUTE_NAME = 'signup'
 
 export default function create({ navigation, route }) {
   return (
     <AuthNavigator.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
       <AuthNavigator.Screen
-        name="Signup"
+        name="signup"
         component={SignupScreen}
         options={{
-          title: 'Signup',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-code-working" />
-          )
+          title: 'Signup'
         }}
       />
       <AuthNavigator.Screen
-        name="Login"
-        component={LinksScreen}
+        name="login"
+        component={LoginScreen}
         options={{
-          title: 'Login',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-book" />
-          )
+          title: 'Login'
         }}
       />
     </AuthNavigator.Navigator>

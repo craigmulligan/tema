@@ -21,16 +21,18 @@ const styles = StyleSheet.create({
     padding: 10
   },
   message: {
-    padding: 50,
-    flex: 1,
-    borderLeftWidth: 10,
-    flexDirection: 'row'
+    marginBottom: 10,
+    padding: 25,
+    borderLeftWidth: 10
   },
-  messageText: {
-    flexGrow: 8
-  },
-  messageText: {
-    flexGrow: 2
+  messageText: {},
+  messageMeta: {
+    display: 'flex',
+    width: '100%',
+    alignSelf: 'flex-start',
+    justifyContent: 'space-between',
+    fontSize: 12,
+    marginBottom: 25
   }
 })
 
@@ -46,10 +48,15 @@ function Message({ item, onPress }) {
         }
       ]}
     >
-      <Text style={styles.messageText}>{item.text}</Text>
       <Text style={styles.messageMeta}>
-        {printDate(new Date(item.createdAt))}
+        <View>
+          <Text>{item.userDisplayName}</Text>
+        </View>
+        <View>
+          <Text>{printDate(new Date(item.createdAt))}</Text>
+        </View>
       </Text>
+      <Text style={styles.messageText}>{item.text}</Text>
     </TouchableOpacity>
   )
 }

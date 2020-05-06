@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { colorHash } from '../utils'
 import { db } from '../firebase'
 import { COLLECTIONS } from '../constants/Api'
+import { auth } from '../firebase'
 
 const styles = StyleSheet.create({
   container: {
@@ -41,9 +42,16 @@ export default function MessageInput({ threadRef }) {
     if (text === '') {
       throw new Error('Invalid Message')
     }
+    const currentUserId = auth.currentUser.uid
+
+    if (!currentUserId) {
+      throw new Error('You need to be logged in to send a message')
+    }
     db.collection(COLLECTIONS.messages).add({
+      userDisplayName: auth.currentUser.email,
       text,
       createdAt: Date.now(),
+      userRef: db.collection(COLLECTIONS.users).doc(auth.currentUser.uid),
       threadRef: threadRef
         ? threadRef
         : db.collection(COLLECTIONS.threads).doc()
