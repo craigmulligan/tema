@@ -4,7 +4,7 @@ import * as React from 'react'
 import TabBarIcon from '../components/TabBarIcon'
 import HomeScreen from '../screens/HomeScreen'
 import LinksScreen from '../screens/LinksScreen'
-
+import ProfileScreen from '../screens/ProfileScreen'
 const BottomTab = createBottomTabNavigator()
 const INITIAL_ROUTE_NAME = 'Home'
 
@@ -17,7 +17,7 @@ export default function BottomTabNavigator({ navigation, route }) {
   return (
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
       <BottomTab.Screen
-        name="Home"
+        name="home"
         component={HomeScreen}
         options={{
           title: 'Messages',
@@ -27,12 +27,22 @@ export default function BottomTabNavigator({ navigation, route }) {
         }}
       />
       <BottomTab.Screen
-        name="Links"
+        name="links"
         component={LinksScreen}
         options={{
           title: 'Notifications',
           tabBarIcon: ({ focused }) => (
             <TabBarIcon focused={focused} name="md-book" />
+          )
+        }}
+      />
+      <BottomTab.Screen
+        name="profile"
+        component={ProfileScreen}
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} name="md-contact" />
           )
         }}
       />
@@ -45,11 +55,11 @@ function getHeaderTitle(route) {
     route.state?.routes[route.state.index]?.name ?? INITIAL_ROUTE_NAME
 
   switch (routeName) {
-    case 'Home':
+    case 'home':
       return 'Threaded Messages'
-    case 'Links':
-      return 'Things you should see'
-    case 'Thread':
-      return '<ThreadName>'
+    case 'links':
+      return 'Notifications'
+    case 'profile':
+      return 'Profile'
   }
 }
