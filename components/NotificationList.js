@@ -10,6 +10,7 @@ import { db } from '../sdk'
 import { COLLECTIONS } from '../constants/Api'
 import { printDate, colorHash, removeDuplicates } from '../utils'
 import { RefreshControl } from 'react-native-web-refresh-control'
+import { auth } from '../sdk'
 
 const styles = StyleSheet.create({
   container: {
@@ -38,20 +39,8 @@ const styles = StyleSheet.create({
 
 function Message({ item, onPress }) {
   return (
-    <TouchableOpacity
-      onPress={() => onPress(item)}
-      style={[
-        styles.message,
-        {
-          backgroundColor: colorHash.light.hex(item.threadRef.id),
-          borderLeftColor: colorHash.dark.hex(item.threadRef.id)
-        }
-      ]}
-    >
+    <TouchableOpacity onPress={() => onPress(item)} style={[styles.message]}>
       <Text style={styles.messageMeta}>
-        <View>
-          <Text>{item.userDisplayName}</Text>
-        </View>
         <View>
           <Text>{printDate(new Date(item.createdAt))}</Text>
         </View>
@@ -61,31 +50,16 @@ function Message({ item, onPress }) {
   )
 }
 
-function Callout({ onPress, threadRef }) {
-  if (threadRef) {
-    return (
-      <TouchableOpacity onPress={() => onPress({})}>
-        <Text style={styles.calloutText}>
-          Click here to create a new thread
-        </Text>
-      </TouchableOpacity>
-    )
-  }
-
-  return (
-    <View>
-      <Text style={styles.calloutText}>Click on a message to reply</Text>
-    </View>
-  )
-}
-
-function useMessages(listRef) {
+function useNotifications(listRef) {
   const [lists, setLists] = React.useState([])
   React.useEffect(() => {
     // returning the onSnapshot result will result in
     // the listener being cancelled on unmount.
+    // 4avbbkrBcmfSGLEUPtQOKsOgvcf2
     const query = db
-      .collection(COLLECTIONS.messages)
+      .collection(COLLECTIONS.users)
+      .doc(auth.currentUser.uid)
+      .collection(COLLECTIONS.notifications)
       .orderBy('createdAt', 'desc')
 
     query.limit(6).onSnapshot(snapshot => {
@@ -98,6 +72,8 @@ function useMessages(listRef) {
       })
 
       const msgs = removeDuplicates([...lists, ...newMessages], 'id')
+
+      console.log(msgs)
 
       setLists(msgs)
       if (listRef.current) {
@@ -114,10 +90,10 @@ function useMessages(listRef) {
   return [lists, setLists]
 }
 
-export default function MessageList({ threadRef, onPress }) {
+export default function MessageList({ onPress }) {
   const listRef = React.useRef()
   const [refreshing, setRefreshing] = React.useState(false)
-  const [messages, setMessages] = useMessages(listRef)
+  const [messages, setMessages] = useNotifications(listRef)
 
   function refresh() {
     if (refreshing) {
@@ -126,7 +102,9 @@ export default function MessageList({ threadRef, onPress }) {
     setRefreshing(true)
     const first = messages[0]
     return db
-      .collection(COLLECTIONS.messages)
+      .collection(COLLECTIONS.users)
+      .doc(auth.currentUser.uid)
+      .collection(COLLECTIONS.notifications)
       .orderBy('createdAt', 'desc')
       .startAfter(first.createdAt)
       .limit(6)
@@ -153,9 +131,6 @@ export default function MessageList({ threadRef, onPress }) {
         }
         keyExtractor={({ id }) => id}
         renderItem={({ item }) => <Message item={item} onPress={onPress} />}
-        ListFooterComponent={() => (
-          <Callout threadRef={threadRef} onPress={onPress} />
-        )}
       />
     </View>
   )

@@ -4,8 +4,9 @@ import { Ionicons } from '@expo/vector-icons'
 import { colorHash } from '../utils'
 import { db } from '../firebase'
 import { COLLECTIONS } from '../constants/Api'
-import { auth } from '../firebase'
-import { mutate }from '../utils'
+import { auth } from '../sdk'
+import { mutate } from '../utils'
+import extract from 'mention-hashtag'
 
 const styles = StyleSheet.create({
   container: {
@@ -43,7 +44,9 @@ export default function MessageInput({ threadRef }) {
     if (text === '') {
       throw new Error('Invalid Message')
     }
+
     const currentUser = auth.currentUser
+    const mentions = ['4avbbkrBcmfSGLEUPtQOKsOgvcf2']
 
     if (!currentUser) {
       throw new Error('You need to be logged in to send a message')
@@ -53,8 +56,9 @@ export default function MessageInput({ threadRef }) {
       userDisplayName: currentUser.displayName || currentUser.email,
       text,
       createdAt: Date.now(),
-      userId: currentUser.uid, 
-      threadId: threadRef && threadRef.id 
+      userId: currentUser.uid,
+      threadId: threadRef && threadRef.id,
+      mentions
     })
 
     setText('')

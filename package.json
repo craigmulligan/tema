@@ -8,7 +8,8 @@
     "build:web": "expo build:web",
     "build": "expo build",
     "eject": "expo eject",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "server": "firebase emulators:start"
   },
   "jest": {
     "preset": "jest-expo"
@@ -28,6 +29,7 @@
     "expo-font": "~8.1.0",
     "expo-web-browser": "~8.1.0",
     "firebase": "^7.9.0",
+    "mention-hashtag": "^1.1.1",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
@@ -36,7 +38,8 @@
     "react-native-screens": "~2.2.0",
     "react-native-web": "~0.11.7",
     "react-native-web-refresh-control": "^1.0.1",
-    "swr": "^0.2.0"
+    "swr": "^0.2.0",
+    "twitter-text": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

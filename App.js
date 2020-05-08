@@ -9,7 +9,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import BottomTabNavigator from './navigation/BottomTabNavigator'
 import AuthNavigator from './navigation/AuthNavigator'
 import useLinking from './navigation/useLinking'
-import { auth } from './firebase'
+import { auth } from './sdk'
 
 const Stack = createStackNavigator()
 

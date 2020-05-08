@@ -1,14 +1,9 @@
 import { Ionicons } from '@expo/vector-icons'
 import * as React from 'react'
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import Button from '../primitives/Button'
 import TextInput from '../primitives/TextInput'
-import { auth } from '../firebase'
+import { auth } from '../sdk'
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = React.useState('')
@@ -20,11 +15,7 @@ export default function SignUpScreen({ navigation }) {
     <View style={styles.container}>
       {loading && <Text>Loading...</Text>}
       {error.length > 0 && <Text>{error}</Text>}
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        placeholder={'Email'}
-      />
+      <TextInput value={email} onChangeText={setEmail} placeholder={'Email'} />
       <TextInput
         value={password}
         onChangeText={setPassword}
@@ -52,7 +43,9 @@ export default function SignUpScreen({ navigation }) {
               }
             })
         }}
-      >Login</Button>
+      >
+        Login
+      </Button>
       <Text onPress={() => navigation.navigate('signup')}>Or Signup</Text>
     </View>
   )

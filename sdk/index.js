@@ -18,11 +18,11 @@ firebase.initializeApp(firebaseConfig)
 export const db = firebase.firestore()
 
 // TODO detect  NODE_ENV
-if (location.hostname === "localhost") {
+if (__DEV__) {
   db.settings({
-    host: "localhost:8080",
+    host: 'localhost:8080',
     ssl: false
-  });
+  })
 }
 
 export const auth = firebase.auth()
