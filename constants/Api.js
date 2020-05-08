@@ -4,4 +4,4 @@ export const COLLECTIONS = {
   users: 'users'
 }
 
-export const API_URL = `http://localhost:5001/dolos-1/us-central1`
+export const API_URL = `http://localhost:5001/dolos-1/us-central1/api`

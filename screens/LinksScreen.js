@@ -7,7 +7,7 @@ import { fetcher } from '../utils'
 import useSWR from 'swr';
 
 export default function LinksScreen() {
-  const { loading, data, error } = useSWR('/api', fetcher)
+  const { loading, data, error } = useSWR('/', fetcher)
 
   console.log({ loading,  data, error })
 

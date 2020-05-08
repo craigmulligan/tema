@@ -8,6 +8,20 @@ export const fetcher = url => fetch(API_URL + url).then(r => {
     return r.json();
 })
 
+export const mutate = (url, data) => fetch(API_URL + url, { 
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+  method: 'POST', 
+  body: JSON.stringify(data) 
+  }).then(r => {
+    if (r.status >= 400 && r.status < 600) {
+      throw new Error(r.statusText);
+    }
+    return r.json();
+})
+
 export const colorHash = {
   dark: new ColorHash(),
   light: new ColorHash({

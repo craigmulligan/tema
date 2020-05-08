@@ -5,6 +5,7 @@ import { colorHash } from '../utils'
 import { db } from '../firebase'
 import { COLLECTIONS } from '../constants/Api'
 import { auth } from '../firebase'
+import { mutate }from '../utils'
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
 export default function MessageInput({ threadRef }) {
   const [text, setText] = React.useState('')
 
-  const addMessage = () => {
+  const addMessage = async () => {
     if (text === '') {
       throw new Error('Invalid Message')
     }
@@ -47,14 +48,13 @@ export default function MessageInput({ threadRef }) {
     if (!currentUser) {
       throw new Error('You need to be logged in to send a message')
     }
-    db.collection(COLLECTIONS.messages).add({
+
+    const data = mutate('/messages', {
       userDisplayName: currentUser.displayName || currentUser.email,
       text,
       createdAt: Date.now(),
-      userRef: db.collection(COLLECTIONS.users).doc(currentUser.uid),
-      threadRef: threadRef
-        ? threadRef
-        : db.collection(COLLECTIONS.threads).doc()
+      userId: currentUser.uid, 
+      threadId: threadRef && threadRef.id 
     })
 
     setText('')
