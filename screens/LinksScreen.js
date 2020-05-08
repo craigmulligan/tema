@@ -3,8 +3,22 @@ import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
+import { fetcher } from '../utils'
+import useSWR from 'swr';
 
 export default function LinksScreen() {
+  const { loading, data, error } = useSWR('/api', fetcher)
+
+  console.log({ loading,  data, error })
+
+  if (loading) {
+    return <Text>Loading</Text>
+  }
+
+  if (error) {
+    return <Text>Error</Text>
+  }
+
   return (
     <View style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text>Notifications will go here</Text> 

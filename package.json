@@ -35,13 +35,15 @@
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
     "react-native-web": "~0.11.7",
-    "react-native-web-refresh-control": "^1.0.1"
+    "react-native-web-refresh-control": "^1.0.1",
+    "swr": "^0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
     "@expo/webpack-config": "^0.12.4-alpha.0",
     "babel-preset-expo": "~8.1.0",
     "expo-cli": "^3.20.1",
+    "firebase-tools": "^8.2.0",
     "jest-expo": "~37.0.0",
     "webpack-bundle-analyzer": "^3.7.0"
   },
