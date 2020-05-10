@@ -10,6 +10,7 @@ import BottomTabNavigator from './navigation/BottomTabNavigator'
 import AuthNavigator from './navigation/AuthNavigator'
 import useLinking from './navigation/useLinking'
 import { auth } from './sdk'
+import Loading from './primitives/Loading'
 
 const Stack = createStackNavigator()
 
@@ -52,8 +53,8 @@ export default function App(props) {
     })
   })
 
-  if (!isLoadingComplete && !props.skipLoadingScreen) {
-    return null
+  if ((!isLoadingComplete && !props.skipLoadingScreen) || !user) {
+    return <Loading />
   } else {
     return (
       <View style={styles.container}>

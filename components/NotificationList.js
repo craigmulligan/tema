@@ -7,7 +7,7 @@ import {
   TouchableOpacity
 } from 'react-native'
 import { db } from '../sdk'
-import { COLLECTIONS } from '../constants/Api'
+import { COLLECTIONS, LIST_LIMIT } from '../constants/Api'
 import { printDate, colorHash, removeDuplicates } from '../utils'
 import { RefreshControl } from 'react-native-web-refresh-control'
 import { auth } from '../sdk'
@@ -17,17 +17,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F0f0f0f0'
   },
-  calloutText: {
-    textAlign: 'center',
-    padding: 10
-  },
-  message: {
+  notification: {
     marginBottom: 10,
     padding: 25,
     borderLeftWidth: 10
   },
-  messageText: {},
-  messageMeta: {
+  notificationText: {},
+  notificationMeta: {
     display: 'flex',
     width: '100%',
     alignSelf: 'flex-start',
@@ -37,15 +33,18 @@ const styles = StyleSheet.create({
   }
 })
 
-function Message({ item, onPress }) {
+function Notification({ item, onPress }) {
   return (
-    <TouchableOpacity onPress={() => onPress(item)} style={[styles.message]}>
-      <Text style={styles.messageMeta}>
+    <TouchableOpacity
+      onPress={() => onPress(item)}
+      style={[styles.notification]}
+    >
+      <Text style={styles.notificationMeta}>
         <View>
           <Text>{printDate(new Date(item.createdAt))}</Text>
         </View>
       </Text>
-      <Text style={styles.messageText}>{item.text}</Text>
+      <Text style={styles.notificationText}>{item.text}</Text>
     </TouchableOpacity>
   )
 }
@@ -62,23 +61,24 @@ function useNotifications(listRef) {
       .collection(COLLECTIONS.notifications)
       .orderBy('createdAt', 'desc')
 
-    query.limit(6).onSnapshot(snapshot => {
-      const newMessages = []
+    query.limit(LIST_LIMIT).onSnapshot(snapshot => {
+      const newNotifications = []
       snapshot.forEach(doc => {
-        newMessages.unshift({
+        newNotifications.unshift({
           id: doc.id,
           ...doc.data()
         })
       })
 
-      const msgs = removeDuplicates([...lists, ...newMessages], 'id')
+      const notifications = removeDuplicates(
+        [...lists, ...newNotifications],
+        'id'
+      )
 
-      console.log(msgs)
-
-      setLists(msgs)
+      setLists(notifications)
       if (listRef.current) {
         // TODO only scroll to bottom if the user
-        // sent the message themselves.
+        // sent the notification themselves.
         // Or if they are currently scrolled to bottom.
         setTimeout(() => {
           listRef.current.scrollToEnd()
@@ -90,31 +90,31 @@ function useNotifications(listRef) {
   return [lists, setLists]
 }
 
-export default function MessageList({ onPress }) {
+export default function NotificationList({ onPress }) {
   const listRef = React.useRef()
   const [refreshing, setRefreshing] = React.useState(false)
-  const [messages, setMessages] = useNotifications(listRef)
+  const [notifications, setNotifications] = useNotifications(listRef)
 
   function refresh() {
     if (refreshing) {
       return
     }
     setRefreshing(true)
-    const first = messages[0]
+    const first = notifications[0]
     return db
       .collection(COLLECTIONS.users)
       .doc(auth.currentUser.uid)
       .collection(COLLECTIONS.notifications)
       .orderBy('createdAt', 'desc')
       .startAfter(first.createdAt)
-      .limit(6)
+      .limit(LIST_LIMIT)
       .get()
       .then(snapshot => {
-        const prevMessages = snapshot.docs.map(doc => ({
+        const prevNotifications = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }))
-        setMessages([...prevMessages.reverse(), ...messages])
+        setNotifications([...prevNotifications.reverse(), ...notifications])
       })
       .then(() => setRefreshing(false))
       .catch(() => setRefreshing(false))
@@ -125,12 +125,14 @@ export default function MessageList({ onPress }) {
       <FlatList
         ref={listRef}
         style={styles.list}
-        data={messages}
+        data={notifications}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} />
         }
         keyExtractor={({ id }) => id}
-        renderItem={({ item }) => <Message item={item} onPress={onPress} />}
+        renderItem={({ item }) => (
+          <Notification item={item} onPress={onPress} />
+        )}
       />
     </View>
   )

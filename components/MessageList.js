@@ -7,7 +7,7 @@ import {
   TouchableOpacity
 } from 'react-native'
 import { db } from '../sdk'
-import { COLLECTIONS } from '../constants/Api'
+import { COLLECTIONS, LIST_LIMIT } from '../constants/Api'
 import { printDate, colorHash, removeDuplicates } from '../utils'
 import { RefreshControl } from 'react-native-web-refresh-control'
 
@@ -88,7 +88,7 @@ function useMessages(listRef) {
       .collection(COLLECTIONS.messages)
       .orderBy('createdAt', 'desc')
 
-    query.limit(6).onSnapshot(snapshot => {
+    query.limit(LIST_LIMIT).onSnapshot(snapshot => {
       const newMessages = []
       snapshot.forEach(doc => {
         newMessages.unshift({
@@ -129,7 +129,7 @@ export default function MessageList({ threadRef, onPress }) {
       .collection(COLLECTIONS.messages)
       .orderBy('createdAt', 'desc')
       .startAfter(first.createdAt)
-      .limit(6)
+      .limit(LIST_LIMIT)
       .get()
       .then(snapshot => {
         const prevMessages = snapshot.docs.map(doc => ({
