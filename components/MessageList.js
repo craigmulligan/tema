@@ -7,9 +7,10 @@ import {
   TouchableOpacity
 } from 'react-native'
 import { db } from '../sdk'
-import { COLLECTIONS, LIST_LIMIT } from '../constants/Api'
+import { COLLECTIONS } from '../constants/Api'
 import { printDate, colorHash, removeDuplicates } from '../utils'
 import { RefreshControl } from 'react-native-web-refresh-control'
+import { Link } from '@react-navigation/native'
 
 const styles = StyleSheet.create({
   container: {
@@ -36,10 +37,9 @@ const styles = StyleSheet.create({
   }
 })
 
-function Message({ item, onPress }) {
+function Message({ item }) {
   return (
-    <TouchableOpacity
-      onPress={() => onPress(item)}
+    <Link
       style={[
         styles.message,
         {
@@ -47,6 +47,7 @@ function Message({ item, onPress }) {
           borderLeftColor: colorHash.dark.hex(item.threadRef.id)
         }
       ]}
+      to={`/app/home?thread=${item.threadRef.id}`}
     >
       <Text style={styles.messageMeta}>
         <View>
@@ -57,18 +58,20 @@ function Message({ item, onPress }) {
         </View>
       </Text>
       <Text style={styles.messageText}>{item.text}</Text>
-    </TouchableOpacity>
+    </Link>
   )
 }
 
 function Callout({ onPress, threadRef }) {
   if (threadRef) {
     return (
-      <TouchableOpacity onPress={() => onPress({})}>
-        <Text style={styles.calloutText}>
-          Click here to create a new thread
-        </Text>
-      </TouchableOpacity>
+      <View>
+        <Link to="/app/home?thread=">
+          <Text style={styles.calloutText}>
+            Click here to create a new thread
+          </Text>
+        </Link>
+      </View>
     )
   }
 
@@ -88,7 +91,7 @@ function useMessages(listRef) {
       .collection(COLLECTIONS.messages)
       .orderBy('createdAt', 'desc')
 
-    query.limit(LIST_LIMIT).onSnapshot(snapshot => {
+    query.limit(6).onSnapshot(snapshot => {
       const newMessages = []
       snapshot.forEach(doc => {
         newMessages.unshift({
@@ -129,7 +132,7 @@ export default function MessageList({ threadRef, onPress }) {
       .collection(COLLECTIONS.messages)
       .orderBy('createdAt', 'desc')
       .startAfter(first.createdAt)
-      .limit(LIST_LIMIT)
+      .limit(6)
       .get()
       .then(snapshot => {
         const prevMessages = snapshot.docs.map(doc => ({

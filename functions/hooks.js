@@ -16,6 +16,7 @@ exports.createNotification = functions.firestore
             .collection('notifications')
             .add({
               text: `New message from ${msg.userRef.id}`,
+              threadRef: snap.data().threadRef,
               messageRef: snap.ref,
               createdAt: Date.now()
             })

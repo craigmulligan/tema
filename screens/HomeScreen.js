@@ -11,17 +11,28 @@ import {
 import { ScrollView } from 'react-native-gesture-handler'
 import MessageList from '../components/MessageList'
 import MessageInput from '../components/MessageInput'
+import { COLLECTIONS } from '../constants/Api'
 import { MonoText } from '../components/StyledText'
+import { db } from '../sdk'
 
-export default function HomeScreen() {
+export default function HomeScreen({ route }) {
+  let threadRef
+  if (route.params && route.params.thread) {
+    threadRef = db.collection(COLLECTIONS.threads).doc(route.params.thread)
+  }
+
   const [selectedMessage, selectMessage] = React.useState({})
+
   return (
     <View style={styles.container}>
       <MessageList
-        threadRef={selectedMessage.threadRef}
+        singleThread={!!threadRef}
+        threadRef={threadRef ? threadRef : selectedMessage.threadRef}
         onPress={selectMessage}
       />
-      <MessageInput threadRef={selectedMessage.threadRef} />
+      <MessageInput
+        threadRef={threadRef ? threadRef : selectedMessage.threadRef}
+      />
     </View>
   )
 }

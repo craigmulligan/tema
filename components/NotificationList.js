@@ -11,6 +11,7 @@ import { COLLECTIONS, LIST_LIMIT } from '../constants/Api'
 import { printDate, colorHash, removeDuplicates } from '../utils'
 import { RefreshControl } from 'react-native-web-refresh-control'
 import { auth } from '../sdk'
+import { Link } from '@react-navigation/native'
 
 const styles = StyleSheet.create({
   container: {
@@ -34,18 +35,18 @@ const styles = StyleSheet.create({
 })
 
 function Notification({ item, onPress }) {
+  console.log(item)
   return (
-    <TouchableOpacity
-      onPress={() => onPress(item)}
-      style={[styles.notification]}
-    >
-      <Text style={styles.notificationMeta}>
-        <View>
-          <Text>{printDate(new Date(item.createdAt))}</Text>
-        </View>
-      </Text>
-      <Text style={styles.notificationText}>{item.text}</Text>
-    </TouchableOpacity>
+    <Link to={`/app/home?thread=${item.threadRef.id}`}>
+      <TouchableOpacity style={[styles.notification]}>
+        <Text style={styles.notificationMeta}>
+          <View>
+            <Text>{printDate(new Date(item.createdAt))}</Text>
+          </View>
+        </Text>
+        <Text style={styles.notificationText}>{item.text}</Text>
+      </TouchableOpacity>
+    </Link>
   )
 }
 
