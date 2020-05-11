@@ -15,31 +15,34 @@ import { COLLECTIONS } from '../constants/Api'
 import { MonoText } from '../components/StyledText'
 import { db } from '../sdk'
 
-export default function HomeScreen({ route }) {
+export default function MessageScreen({ route, singleThread }) {
   let threadRef
-  let singleThread = false
   let messageRef
-  if (route.params && route.params.thread) {
-    if (route.params.thread) {
-      threadRef = db.collection(COLLECTIONS.threads).doc(route.params.thread)
+
+  if (route.params && route.params.threadId) {
+    if (route.params.threadId) {
+      threadRef = db.collection(COLLECTIONS.threads).doc(route.params.threadId)
     }
-    if (route.params.singleThread === 'true') {
-      singleThread = true
-    }
-    if (route.params.message) {
-      messageRef = '1'
+    if (route.params.messageId) {
+      messageRef = db
+        .collection(COLLECTIONS.messages)
+        .doc(route.params.messageId)
     }
   }
 
   return (
     <View style={styles.container}>
-      <MessageList singleThread={singleThread} threadRef={threadRef} />
+      <MessageList
+        singleThread={singleThread}
+        threadRef={threadRef}
+        messageRef={messageRef}
+      />
       <MessageInput threadRef={threadRef} />
     </View>
   )
 }
 
-HomeScreen.navigationOptions = {
+MessageScreen.navigationOptions = {
   header: null
 }
 

@@ -47,7 +47,7 @@ function Message({ item }) {
           borderLeftColor: colorHash.dark.hex(item.threadRef.id)
         }
       ]}
-      to={`/app/message?thread=${item.threadRef.id}`}
+      to={`/app/feed?threadId=${item.threadRef.id}`}
     >
       <Text style={styles.messageMeta}>
         <View>
@@ -66,7 +66,7 @@ function Callout({ threadRef }) {
   if (threadRef) {
     return (
       <View>
-        <Link to="/app/message?thread=&message=&singleThread=false">
+        <Link to="/app/feed">
           <Text style={styles.calloutText}>
             Click here to create a new thread
           </Text>
@@ -89,7 +89,6 @@ function useMessages(listRef, singleThread, threadRef = {}) {
     // the listener being cancelled on unmount.
     let query = db.collection(COLLECTIONS.messages).orderBy('createdAt', 'desc')
 
-    console.log(singleThread, threadRef)
     if (singleThread && threadRef) {
       query = query.where('threadRef', '==', threadRef)
     }
@@ -121,6 +120,7 @@ function useMessages(listRef, singleThread, threadRef = {}) {
 }
 
 export default function MessageList({ threadRef, singleThread }) {
+  console.log({ singleThread, threadRef })
   const listRef = React.useRef()
   const [refreshing, setRefreshing] = React.useState(false)
   const [messages, setMessages] = useMessages(listRef, singleThread, threadRef)

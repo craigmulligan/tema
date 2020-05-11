@@ -6,7 +6,7 @@ import * as Font from 'expo-font'
 import { Ionicons } from '@expo/vector-icons'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import AppNavigator from './navigation/AppNavigator'
+import RootNavigator from './navigation/RootNavigator'
 import AuthNavigator from './navigation/AuthNavigator'
 import useLinking from './navigation/useLinking'
 import { auth } from './sdk'
@@ -67,7 +67,7 @@ export default function App(props) {
             {user == null ? (
               <Stack.Screen name="auth" component={AuthNavigator} />
             ) : (
-              <Stack.Screen name="app" component={AppNavigator} />
+              <Stack.Screen name="root" component={RootNavigator} />
             )}
           </Stack.Navigator>
         </NavigationContainer>

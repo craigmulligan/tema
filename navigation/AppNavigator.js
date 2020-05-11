@@ -2,11 +2,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import * as React from 'react'
 
 import TabBarIcon from '../components/TabBarIcon'
-import HomeScreen from '../screens/HomeScreen'
 import NotificationsScreen from '../screens/NotificationsScreen'
+import ThreadScreen from '../screens/ThreadScreen'
 import ProfileScreen from '../screens/ProfileScreen'
 const App = createBottomTabNavigator()
-const INITIAL_ROUTE_NAME = 'messages'
+const INITIAL_ROUTE_NAME = 'threads'
 
 export default function AppNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
@@ -15,24 +15,24 @@ export default function AppNavigator({ navigation, route }) {
   navigation.setOptions({ headerTitle: getHeaderTitle(route) })
 
   return (
-    <App.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+    <App.Navigator>
       <App.Screen
-        name="message"
-        component={HomeScreen}
+        name="feed"
+        component={ThreadScreen}
         options={{
-          title: 'Messages',
+          title: 'Threads',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-message" />
+            <TabBarIcon focused={focused} name="message-circle" />
           )
         }}
       />
       <App.Screen
-        name="notification"
+        name="notifications"
         component={NotificationsScreen}
         options={{
           title: 'Notifications',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-book" />
+            <TabBarIcon focused={focused} name="bell" />
           )
         }}
       />
@@ -42,7 +42,7 @@ export default function AppNavigator({ navigation, route }) {
         options={{
           title: 'Profile',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-contact" />
+            <TabBarIcon focused={focused} name="settings" />
           )
         }}
       />
@@ -55,8 +55,8 @@ function getHeaderTitle(route) {
     route.state?.routes[route.state.index]?.name ?? INITIAL_ROUTE_NAME
 
   switch (routeName) {
-    case 'home':
-      return 'Threaded Messages'
+    case 'feed':
+      return 'Message Feed'
     case 'notifications':
       return 'Notifications'
     case 'profile':
