@@ -62,11 +62,11 @@ function Message({ item }) {
   )
 }
 
-function Callout({ onPress, threadRef }) {
+function Callout({ threadRef }) {
   if (threadRef) {
     return (
       <View>
-        <Link to="/app/home?thread=">
+        <Link to="/app/home?thread=&message=&singleThread=false">
           <Text style={styles.calloutText}>
             Click here to create a new thread
           </Text>
@@ -82,14 +82,17 @@ function Callout({ onPress, threadRef }) {
   )
 }
 
-function useMessages(listRef) {
+function useMessages(listRef, singleThread, threadRef = {}) {
   const [lists, setLists] = React.useState([])
   React.useEffect(() => {
     // returning the onSnapshot result will result in
     // the listener being cancelled on unmount.
-    const query = db
-      .collection(COLLECTIONS.messages)
-      .orderBy('createdAt', 'desc')
+    let query = db.collection(COLLECTIONS.messages).orderBy('createdAt', 'desc')
+
+    console.log(singleThread, threadRef)
+    if (singleThread && threadRef) {
+      query = query.where('threadRef', '==', threadRef)
+    }
 
     query.limit(6).onSnapshot(snapshot => {
       const newMessages = []
@@ -102,7 +105,7 @@ function useMessages(listRef) {
 
       const msgs = removeDuplicates([...lists, ...newMessages], 'id')
 
-      setLists(msgs)
+      setLists(newMessages)
       if (listRef.current) {
         // TODO only scroll to bottom if the user
         // sent the message themselves.
@@ -112,15 +115,15 @@ function useMessages(listRef) {
         }, 200)
       }
     })
-  }, [])
+  }, [singleThread, threadRef.id])
 
   return [lists, setLists]
 }
 
-export default function MessageList({ threadRef, onPress }) {
+export default function MessageList({ threadRef, singleThread }) {
   const listRef = React.useRef()
   const [refreshing, setRefreshing] = React.useState(false)
-  const [messages, setMessages] = useMessages(listRef)
+  const [messages, setMessages] = useMessages(listRef, singleThread, threadRef)
 
   function refresh() {
     if (refreshing) {
@@ -155,10 +158,8 @@ export default function MessageList({ threadRef, onPress }) {
           <RefreshControl refreshing={refreshing} onRefresh={refresh} />
         }
         keyExtractor={({ id }) => id}
-        renderItem={({ item }) => <Message item={item} onPress={onPress} />}
-        ListFooterComponent={() => (
-          <Callout threadRef={threadRef} onPress={onPress} />
-        )}
+        renderItem={({ item }) => <Message item={item} />}
+        ListFooterComponent={() => <Callout threadRef={threadRef} />}
       />
     </View>
   )

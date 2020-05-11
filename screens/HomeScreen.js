@@ -17,22 +17,24 @@ import { db } from '../sdk'
 
 export default function HomeScreen({ route }) {
   let threadRef
+  let singleThread = false
+  let messageRef
   if (route.params && route.params.thread) {
-    threadRef = db.collection(COLLECTIONS.threads).doc(route.params.thread)
+    if (route.params.thread) {
+      threadRef = db.collection(COLLECTIONS.threads).doc(route.params.thread)
+    }
+    if (route.params.singleThread === 'true') {
+      singleThread = true
+    }
+    if (route.params.message) {
+      messageRef = '1'
+    }
   }
-
-  const [selectedMessage, selectMessage] = React.useState({})
 
   return (
     <View style={styles.container}>
-      <MessageList
-        singleThread={!!threadRef}
-        threadRef={threadRef ? threadRef : selectedMessage.threadRef}
-        onPress={selectMessage}
-      />
-      <MessageInput
-        threadRef={threadRef ? threadRef : selectedMessage.threadRef}
-      />
+      <MessageList singleThread={singleThread} threadRef={threadRef} />
+      <MessageInput threadRef={threadRef} />
     </View>
   )
 }
