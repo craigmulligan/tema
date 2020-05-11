@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 function Notification({ item, onPress }) {
   return (
     <Link
-      to={`/app/home?thread=${item.threadRef.id}&singleThread=true&message=${item.messageRef.id}`}
+      to={`/app/message?thread=${item.threadRef.id}&singleThread=true&message=${item.messageRef.id}`}
     >
       <TouchableOpacity style={[styles.notification]}>
         <Text style={styles.notificationMeta}>

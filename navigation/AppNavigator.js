@@ -3,32 +3,32 @@ import * as React from 'react'
 
 import TabBarIcon from '../components/TabBarIcon'
 import HomeScreen from '../screens/HomeScreen'
-import LinksScreen from '../screens/LinksScreen'
+import NotificationsScreen from '../screens/NotificationsScreen'
 import ProfileScreen from '../screens/ProfileScreen'
-const BottomTab = createBottomTabNavigator()
-const INITIAL_ROUTE_NAME = 'home'
+const App = createBottomTabNavigator()
+const INITIAL_ROUTE_NAME = 'messages'
 
-export default function BottomTabNavigator({ navigation, route }) {
+export default function AppNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
   // currently active tab. Learn more in the documentation:
   // https://reactnavigation.org/docs/en/screen-options-resolution.html
   navigation.setOptions({ headerTitle: getHeaderTitle(route) })
 
   return (
-    <BottomTab.Navigator>
-      <BottomTab.Screen
-        name="home"
+    <App.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+      <App.Screen
+        name="message"
         component={HomeScreen}
         options={{
           title: 'Messages',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-code-working" />
+            <TabBarIcon focused={focused} name="md-message" />
           )
         }}
       />
-      <BottomTab.Screen
-        name="links"
-        component={LinksScreen}
+      <App.Screen
+        name="notification"
+        component={NotificationsScreen}
         options={{
           title: 'Notifications',
           tabBarIcon: ({ focused }) => (
@@ -36,7 +36,7 @@ export default function BottomTabNavigator({ navigation, route }) {
           )
         }}
       />
-      <BottomTab.Screen
+      <App.Screen
         name="profile"
         component={ProfileScreen}
         options={{
@@ -46,7 +46,7 @@ export default function BottomTabNavigator({ navigation, route }) {
           )
         }}
       />
-    </BottomTab.Navigator>
+    </App.Navigator>
   )
 }
 
@@ -57,7 +57,7 @@ function getHeaderTitle(route) {
   switch (routeName) {
     case 'home':
       return 'Threaded Messages'
-    case 'links':
+    case 'notifications':
       return 'Notifications'
     case 'profile':
       return 'Profile'

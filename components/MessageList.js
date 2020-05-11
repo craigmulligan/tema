@@ -47,7 +47,7 @@ function Message({ item }) {
           borderLeftColor: colorHash.dark.hex(item.threadRef.id)
         }
       ]}
-      to={`/app/home?thread=${item.threadRef.id}`}
+      to={`/app/message?thread=${item.threadRef.id}`}
     >
       <Text style={styles.messageMeta}>
         <View>
@@ -66,7 +66,7 @@ function Callout({ threadRef }) {
   if (threadRef) {
     return (
       <View>
-        <Link to="/app/home?thread=&message=&singleThread=false">
+        <Link to="/app/message?thread=&message=&singleThread=false">
           <Text style={styles.calloutText}>
             Click here to create a new thread
           </Text>
