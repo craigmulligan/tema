@@ -2,7 +2,8 @@ export const COLLECTIONS = {
   messages: 'messages',
   threads: 'threads',
   users: 'users',
-  notifications: 'notifications'
+  notifications: 'notifications',
+  teams: 'teams'
 }
 
 export const API_URL = __DEV__
