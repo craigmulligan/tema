@@ -37,13 +37,16 @@ const styles = StyleSheet.create({
   }
 })
 
-function Message({ item }) {
+function Message({ item, isActive, singleThread }) {
+  const bgShade = isActive ? 'dark' : 'light'
+  const Touch = singleThread ? View : Link
   return (
-    <Link
+    <Touch
+      draggable="false"
       style={[
         styles.message,
         {
-          backgroundColor: colorHash.light.hex(item.threadRef.id),
+          backgroundColor: colorHash[bgShade].hex(item.threadRef.id),
           borderLeftColor: colorHash.dark.hex(item.threadRef.id)
         }
       ]}
@@ -52,13 +55,14 @@ function Message({ item }) {
       <Text style={styles.messageMeta}>
         <View>
           <Text>{item.userDisplayName}</Text>
+          <Text>{item.id}</Text>
         </View>
         <View>
           <Text>{printDate(new Date(item.createdAt))}</Text>
         </View>
       </Text>
       <Text style={styles.messageText}>{item.text}</Text>
-    </Link>
+    </Touch>
   )
 }
 
@@ -82,48 +86,80 @@ function Callout({ threadRef }) {
   )
 }
 
-function useMessages(listRef, singleThread, threadRef = {}) {
+function useMessages(listRef, singleThread, threadRef = {}, messageRef) {
   const [lists, setLists] = React.useState([])
   React.useEffect(() => {
-    // returning the onSnapshot result will result in
-    // the listener being cancelled on unmount.
-    let query = db.collection(COLLECTIONS.messages).orderBy('createdAt', 'desc')
+    let listener
+    const startListener = async () => {
+      // returning the onSnapshot result will result in
+      // the listener being cancelled on unmount.
+      let query = db
+        .collection(COLLECTIONS.messages)
+        .orderBy('createdAt', 'desc')
 
-    if (singleThread && threadRef) {
-      query = query.where('threadRef', '==', threadRef)
+      if (singleThread && threadRef) {
+        query = query.where('threadRef', '==', threadRef)
+      }
+
+      if (messageRef) {
+        // make sure we load the actual message
+        const snapshot = await messageRef.get()
+        // from the message ref till now
+        // TODO we should check for new messages onScrollReachEnd instead of the whole range
+        // But notSure how that would work with the listener right now.
+        query = query.endAt(snapshot.data().createdAt)
+      } else {
+        // just get the last x messages.
+        query = query.limit(6)
+      }
+
+      listener = query.onSnapshot(snapshot => {
+        const newMessages = []
+        snapshot.forEach(doc => {
+          newMessages.unshift({
+            id: doc.id,
+            ...doc.data()
+          })
+        })
+
+        const msgs = removeDuplicates([...lists, ...newMessages], 'id')
+
+        setLists(newMessages)
+        if (listRef.current) {
+          // TODO only scroll to bottom if the user
+          // sent the message themselves.
+          // Or if they are currently scrolled to bottom.
+          setTimeout(() => {
+            if (messageRef) {
+              listRef.current.scrollToItem({ item: { id: messageRef.id } })
+            } else {
+              listRef.current.scrollToEnd()
+            }
+          }, 200)
+        }
+      })
     }
 
-    query.limit(6).onSnapshot(snapshot => {
-      const newMessages = []
-      snapshot.forEach(doc => {
-        newMessages.unshift({
-          id: doc.id,
-          ...doc.data()
-        })
-      })
+    startListener()
+    const stopListener = () => {
+      listener()
+    }
 
-      const msgs = removeDuplicates([...lists, ...newMessages], 'id')
-
-      setLists(newMessages)
-      if (listRef.current) {
-        // TODO only scroll to bottom if the user
-        // sent the message themselves.
-        // Or if they are currently scrolled to bottom.
-        setTimeout(() => {
-          listRef.current.scrollToEnd()
-        }, 200)
-      }
-    })
+    return stopListener
   }, [singleThread, threadRef.id])
 
   return [lists, setLists]
 }
 
-export default function MessageList({ threadRef, singleThread }) {
-  console.log({ singleThread, threadRef })
+export default function MessageList({ threadRef, singleThread, messageRef }) {
   const listRef = React.useRef()
   const [refreshing, setRefreshing] = React.useState(false)
-  const [messages, setMessages] = useMessages(listRef, singleThread, threadRef)
+  const [messages, setMessages] = useMessages(
+    listRef,
+    singleThread,
+    threadRef,
+    messageRef
+  )
 
   function refresh() {
     if (refreshing) {
@@ -158,7 +194,13 @@ export default function MessageList({ threadRef, singleThread }) {
           <RefreshControl refreshing={refreshing} onRefresh={refresh} />
         }
         keyExtractor={({ id }) => id}
-        renderItem={({ item }) => <Message item={item} />}
+        renderItem={({ item }) => (
+          <Message
+            item={item}
+            isActive={item.id === messageRef?.id}
+            singleThread={singleThread}
+          />
+        )}
         ListFooterComponent={() => <Callout threadRef={threadRef} />}
       />
     </View>

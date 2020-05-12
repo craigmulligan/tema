@@ -36,15 +36,17 @@ const styles = StyleSheet.create({
 
 function Notification({ item }) {
   return (
-    <Link to={`/thread?threadId=${item.threadRef.id}&messageId=${item.messageRef.id}`}>
-      <TouchableOpacity style={[styles.notification]}>
-        <Text style={styles.notificationMeta}>
-          <View>
-            <Text>{printDate(new Date(item.createdAt))}</Text>
-          </View>
-        </Text>
-        <Text style={styles.notificationText}>{item.text}</Text>
-      </TouchableOpacity>
+    <Link
+      to={`/thread?threadId=${item.threadRef.id}&messageId=${item.messageRef.id}`}
+      draggable="false"
+      style={[styles.notification]}
+    >
+      <Text style={styles.notificationMeta}>
+        <View>
+          <Text>{printDate(new Date(item.createdAt))}</Text>
+        </View>
+      </Text>
+      <Text style={styles.notificationText}>{item.text}</Text>
     </Link>
   )
 }
