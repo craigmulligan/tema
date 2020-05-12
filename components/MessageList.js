@@ -167,8 +167,13 @@ export default function MessageList({ threadRef, singleThread, messageRef }) {
     }
     setRefreshing(true)
     const first = messages[0]
-    return db
-      .collection(COLLECTIONS.messages)
+    let query = db.collection(COLLECTIONS.messages)
+
+    if (singleThread && threadRef) {
+      query = query.where('threadRef', '==', threadRef)
+    }
+
+    query
       .orderBy('createdAt', 'desc')
       .startAfter(first.createdAt)
       .limit(6)

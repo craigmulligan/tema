@@ -3,7 +3,7 @@ import * as React from 'react'
 import Button from '../primitives/Button'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import TextInput from '../primitives/TextInput'
-import { sdk } from '../firebase'
+import { auth } from '../sdk'
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = React.useState('')
