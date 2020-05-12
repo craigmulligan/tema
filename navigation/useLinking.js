@@ -9,7 +9,9 @@ export default function(containerRef) {
         path: '',
         screens: {
           app: 'app',
-          thread: 'thread'
+          thread: 'thread',
+          teamCreate: 'create',
+          team: 'team'
         }
       },
       auth: 'auth'

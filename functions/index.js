@@ -11,9 +11,6 @@ app.use(cors({ origin: true }))
 // build multiple CRUD interfaces:
 app.get('/', (req, res) => res.send(JSON.stringify({ message: 'hii!' })))
 app.post('/messages', async (req, res) => {
-  // do stuff
-
-  // TODO make this async
   const { userId, threadId, ...rest } = req.body
 
   const msg = {
@@ -27,6 +24,31 @@ app.post('/messages', async (req, res) => {
   res
     .status(201)
     .send(JSON.stringify(msg))
+    .end()
+})
+
+app.post('/teams', async (req, res) => {
+  const { userId, ...rest } = req.body
+
+  const team = {
+    ...rest,
+    userRef: db.collection('users').doc(userId)
+  }
+
+  // TODO do this as a transaction
+  const teamRef = await db.collection('teams').add(team)
+
+  await db
+    .collection('users')
+    .doc(userId)
+    .collection('teams')
+    .add({
+      teamRef
+    })
+
+  res
+    .status(201)
+    .send(JSON.stringify(team))
     .end()
 })
 

@@ -19,8 +19,6 @@ export default function App(props) {
   const [initialNavigationState, setInitialNavigationState] = React.useState()
   const [user, setUser] = React.useState()
   const [authReady, setAuthReady] = React.useState(false)
-  const [token, setToken] = React.useState()
-  const [tokenReady, setTokenReady] = React.useState(false)
 
   const containerRef = React.useRef()
   const { getInitialState } = useLinking(containerRef)
@@ -53,23 +51,12 @@ export default function App(props) {
 
   React.useEffect(() => {
     return auth.onAuthStateChanged(user => {
-      setAuthReady(true)
       setUser(user)
-
-      user
-        .getIdTokenResult()
-        .then(setToken)
-        .then(() => {
-          setTokenReady(true)
-        })
+      setAuthReady(true)
     })
   })
 
-  if (
-    (!isLoadingComplete && !props.skipLoadingScreen) ||
-    !authReady ||
-    !tokenReady
-  ) {
+  if ((!isLoadingComplete && !props.skipLoadingScreen) || !authReady) {
     return <Loading />
   } else {
     return (

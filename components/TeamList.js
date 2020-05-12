@@ -37,46 +37,40 @@ const styles = StyleSheet.create({
 function Team({ item }) {
   return (
     <Link to={`/app/${item.id}/feed`} draggable="false" style={[styles.team]}>
-      <Text style={styles.teamMeta}>
-        <View>
-          <Text>{printDate(new Date(item.createdAt))}</Text>
-        </View>
-      </Text>
       <Text style={styles.teamText}>{item.text}</Text>
     </Link>
   )
 }
 
-function useTeams(listRef) {
+function useTeams() {
   const [lists, setLists] = React.useState([])
   React.useEffect(() => {
-    // returning the onSnapshot result will result in
-    // the listener being cancelled on unmount.
-    // 4avbbkrBcmfSGLEUPtQOKsOgvcf2
-    const query = db.collection(COLLECTIONS.teams).orderBy('createdAt', 'desc')
+    const getTeams = async () => {
+      const query = db
+        .collection(COLLECTIONS.users)
+        .doc(auth.currentUser.uid)
+        .collection(COLLECTIONS.teams)
 
-    query.limit(LIST_LIMIT).onSnapshot(snapshot => {
-      const newTeams = []
-      snapshot.forEach(doc => {
-        newTeams.unshift({
-          id: doc.id,
-          ...doc.data()
-        })
+      const snapshot = await query.limit(LIST_LIMIT).get()
+      const teamRefs = snapshot.docs.map(doc => {
+        const data = doc.data()
+        return data.teamRef.get()
       })
 
-      const teams = removeDuplicates([...lists, ...newTeams], 'id')
+      const data = await Promise.all(teamRefs)
 
-      setLists(teams)
-      if (listRef.current) {
-        // TODO only scroll to bottom if the user
-        // sent the team themselves.
-        // Or if they are currently scrolled to bottom.
-        setTimeout(() => {
-          listRef.current.scrollToEnd()
-        }, 200)
-      }
-    })
-  }, [])
+      setLists(
+        data.map(d => {
+          return {
+            id: d.id,
+            ...d.data()
+          }
+        })
+      )
+    }
+
+    getTeams()
+  }, [auth.currentUser.uid])
 
   return [lists, setLists]
 }
@@ -92,7 +86,7 @@ export default function TeamList({ ids }) {
         style={styles.list}
         data={teams}
         keyExtractor={({ id }) => id}
-        renderItem={({ item }) => <Team item={item} onPress={onPress} />}
+        renderItem={({ item }) => <Team item={item} />}
       />
     </View>
   )
