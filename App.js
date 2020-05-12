@@ -18,6 +18,7 @@ export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false)
   const [initialNavigationState, setInitialNavigationState] = React.useState()
   const [user, setUser] = React.useState()
+  const [appReady, setAppReady] = React.useState(false)
   const containerRef = React.useRef()
   const { getInitialState } = useLinking(containerRef)
 
@@ -49,11 +50,12 @@ export default function App(props) {
 
   React.useEffect(() => {
     return auth.onAuthStateChanged(user => {
+      setAppReady(true)
       setUser(user)
     })
   })
 
-  if ((!isLoadingComplete && !props.skipLoadingScreen) || !user) {
+  if ((!isLoadingComplete && !props.skipLoadingScreen) || !appReady) {
     return <Loading />
   } else {
     return (
